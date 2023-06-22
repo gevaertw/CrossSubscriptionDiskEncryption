@@ -1,8 +1,11 @@
 # Goal
 To create a setup that uses disk encryption keys stored in a keyvault that sits in another tennant.
 
+See also:
+https://learn.microsoft.com/en-us/azure/virtual-machines/disks-cross-tenant-customer-managed-keys?tabs=azure-portal
+
 # Architecture
-![Diagram](architectureDiagram.drawio.svg "Diagram")
+![Diagram](BYOK-crossTennant.drawio.svg "Diagram")
 
 # Requirements
 - In order to run this script you need to meet the following pre requisites
@@ -19,4 +22,4 @@ To create a setup that uses disk encryption keys stored in a keyvault that sits 
 Unsupported script, not by me, not by my past, present or future employer.  Use at your own risk.
 
 
-https://learn.microsoft.com/en-us/azure/virtual-machines/disks-cross-tenant-customer-managed-keys?tabs=azure-portal#limitations
+
