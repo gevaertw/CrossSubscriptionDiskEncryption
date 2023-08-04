@@ -1,0 +1,33 @@
+{
+    "customerSubscriptionName": "ME-MngEnvMCAP376337-wgevaert-2",
+    "customerRegionName": "northeurope",
+    "customerRgName": "DiskEncryptionLab",
+    "customerEncryptionAssignedIdentityName" : "CustomerEncryptionIdentity",
+    "customerEncryptionAppRegName" : "CustomerEncryptionAppReg",
+    "customerEncryptionAppReplyUrl" : "http://localhost:8080",
+
+    "vmNamePrefix": "RHELVM",
+    "vmImage": "RedHat:RHEL:8-lvm-gen2:8.5.2022032206",
+    "dataDiskNamePrefix": "DataDisk",
+    "dataDiskSize": 128,
+    "vNetName": "vnet-diskEncryptionExperiment",
+    "vNetAddressSpace": "10.1.0.0/16",
+    "bastionAddressPrefix": "10.1.254.0/24",
+    "vmSubnetName": "snet-VM",
+    "vmAddressPrefix": "10.1.0.0/24",
+    "bastionPublicIPName": "pip-Bastion",
+    "bastionName": "bas-fastDeploy",
+    "diskEncryptionKeyName": "diskEncryptionKey01",
+    "diskEncryptionSetName": "diskEncryptionSet01",
+    "bootdiagStorage": "bootdiag61354345834",
+
+    "kmaasSubscriptionName": "ME-MngEnvMCAP538301-wgevaert-2",
+    "KmaasRegionName": "northeurope",
+    "KmaasWorkloadRgName": "diskEncryptionExperimentKeys",
+    "KmaasWorkloadRgkeyVaultName": "kv-diskEncWG124892",
+    "appName" : "MyApp"
+    
+    
+    
+
+}

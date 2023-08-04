@@ -84,7 +84,7 @@ az vm encryption enable `
     --volume-type DATA
  #>
 
-## server-side encryption with customer-managed keys for managed disks
+## Server-Side Encryption (SSE) with Customer Managed Keys (CMK) for managed disks
 az disk-encryption-set create `
     --name $diskEncryptionSetName `
     --location $regionName `

@@ -1,105 +1,96 @@
-#get som secrets from an external file, not published on github, create your own file :)
-$secretParamamters = Get-Content -Raw -Path '.\secrets.json' | ConvertFrom-Json
-$secretParamamters.parameters
+# get paramteres from json files
+$secretParameters = Get-Content -Raw -Path '.\secrets.json' | ConvertFrom-Json
+$parameters = Get-Content -Raw -Path '.\parameters.json' | ConvertFrom-Json
+
+$customerSubscriptionName = $secretParameters.customerSubscriptionName
+$adminUserName = $secretParameters.adminUserName
+$customerLabRgName = $parameters.customerLabRgName
+$tagList = $parameters.tagList
+$regionName = $parameters.regionName
+$vmNamePrefix = $parameters.vmNamePrefix
+$vmImage = $parameters.vmImage
+$dataDiskNamePrefix = $parameters.dataDiskNamePrefix
+$dataDiskSize = $parameters.dataDiskSize
+$bootdiagStorage = $parameters.bootdiagStorage + (Get-Random -Minimum 0000 -Maximum 9999).ToString()
+$vNetName = $parameters.vNetName
+$vNetAddressSpace = $parameters.vNetAddressSpace
+$vmSubnetName = $parameters.vmSubnetName
+$vmAddressPrefix = $parameters.vmAddressPrefix
+$bastionPublicIPName = $parameters.bastionPublicIPName
+$bastionName = $parameters.bastionName
+$bastionAddressPrefix = $parameters.bastionAddressPrefix
 
 
-# experiments on disk encrytion
-$tagList= @("CostCenter=DiskEncryptionExperiments","Environment=DEV01")
-$sourceSubscriptionName=$secretParamamters.sourceSubscriptionName
-$destinationSubscriptionName= $secretParamamters.destinationSubscriptionName
-$keyVaultrgName="diskEncryptionExperimentKeys"
-$VMrgName="diskEncryptionExperimentVMs"
-$regionName="northeurope"
-$vmNamePrefix="RHELVM"
-$vmImage="RedHat:RHEL:8-lvm-gen2:8.5.2022032206" #see vmimages on how to get this urn / vmImage
-$adminUserName= $secretParamamters.adminUserName
-$dataDiskNamePrefix="DataDisk"
-$dataDiskSize=128
-$bootdiagStorage="sabootdiag486643485"
-$vNetName="vnet-diskEncryptionExperiment"
-$vNetAddressSpace="10.1.0.0/16"
-$bastionAddressPrefix="10.1.254.0/24"
-$vmSubnetName="snet-VM"
-$vmAddressPrefix="10.1.0.0/24"
-$bastionPublicIPName="pip-Bastion"
-$bastionName="bas-fastDeploy"
-$keyVaultName = "kv-diskEncWG124892"
-$diskEncryptionKeyName = "diskEncryptionKey01"
-$diskEncryptionSetName = "diskEncryptionSet01"
-
-az account set --subscription $destinationSubscriptionName
+az account set --subscription $customerSubscriptionName
 
 # create the RG
-az group create --name $VMrgName --location $regionName --tag $tagList
+az group create --name $customerLabRgName --location $regionName --tag $tagList
 
 # create the vNet
 az network vnet create `
     --name $vNetName `
-    --tags $tagList `
-    --resource-group $VMrgName `
+    --resource-group $customerLabRgName `
     --location $regionName `
     --address-prefix $vNetAddressSpace
 
 #create VM subnet
 az network vnet subnet create `
     --name $vmSubnetName `
-    --resource-group $VMrgName `
+    --resource-group $customerLabRgName `
     --vnet-name $vNetName `
     --address-prefixes $vmAddressPrefix
-
+<# # Optional Bastion stuff comment it out if not needed
 #create bastion subnet in vnet
 az network vnet subnet create `
     --name AzureBastionSubnet `
-    --resource-group $VMrgName `
+    --resource-group $customerLabRgName `
     --vnet-name $vNetName `
     --address-prefixes $bastionAddressPrefix
 
-#Bastion needs a public IP
+## Bastion needs a public IP
 az network public-ip create `
-    --resource-group $VMrgName `
-    --tags $tagList `
+    --resource-group $customerLabRgName `
     --name $bastionPublicIPName `
     --sku Standard `
     --location $regionName
 
-#Create The bastion
+## Create The bastion
 az network bastion create `
     --name $bastionName `
-    --tags $tagList `
+
     --public-ip-address $bastionPublicIPName `
-    --resource-group $VMrgName `
+    --resource-group $customerLabRgName `
     --vnet-name $vNetName `
     --location $regionName `
     --enable-tunneling true `
-    --sku Standard
+    --sku Standard #>
 
 #create boot diag sa
 az storage account create `
     --name $bootdiagStorage `
-    --tags $tagList `
-    --resource-group $VMrgName `
+    --resource-group $customerLabRgName `
     --location $regionName `
     --sku Standard_LRS
 
 #create the VM
 $vmName = $vmNamePrefix + "01"
-Write-Host $vmNameaz vm create `
-  --resource-group $VMrgName `
-  --tags $tagList `
-  --name $vmName `
-  --image $vmImage `
-  --admin-username $adminUserName `
-  --generate-ssh-keys `
-  --security-type TrustedLaunch `
-  --vnet-name $vNetName `
-  --subnet $vmSubnetName `
-  --boot-diagnostics-storage $bootdiagStorage `
-  --public-ip-address '""'
+Write-Host $vmName
+az vm create `
+    --resource-group $customerLabRgName `
+    --name $vmName `
+    --image $vmImage `
+    --admin-username $adminUserName `
+    --generate-ssh-keys `
+    --security-type TrustedLaunch `
+    --vnet-name $vNetName `
+    --subnet $vmSubnetName `
+    --boot-diagnostics-storage $bootdiagStorage `
+    --public-ip-address '""'
 
 #add a NEW disk to the vm
-$dataDiskName =  $vmName + $dataDiskNamePrefix + "01"
+$dataDiskName = $vmName + $dataDiskNamePrefix + "01"
 az vm disk attach `
-    --resource-group $VMrgName `
+    --resource-group $customerLabRgName `
     --vm-name $vmName `
     --name $dataDiskName `
     --size-gb $dataDiskSize `
